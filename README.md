@@ -34,3 +34,26 @@ The environment variables will be something like the below:
     # TOKEN GENERATION
     SECRET=EFISHERYBACKENDENGINEERTASK 2022
 ```
+
+### 2. Fetch App
+
+Create `.env` files inside fetch-app directory (`/fetch-app`) and add the following environment variables:
+
+```bash
+    PORT=<PORT>
+    SECRET=<SECRET>
+```
+
+Notes:
+
+- `PORT`is the port number where the net will listen to.
+- `SECRET` is a jwt key to sign the generated token.
+
+The environment variables will be something like the below:
+
+#### /fetch-app
+
+```bash
+    PORT=4000
+    SECRET=EFISHERYBACKENDENGINEERTASK 2022
+```
