@@ -4,7 +4,8 @@
   "description": "eFishery Back End Engineer Test",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon index.ts",
+    "build": "tsc"
   },
   "keywords": [],
   "author": {
@@ -13,6 +14,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "axios": "^0.27.2",
     "cors": "^2.8.5",
     "dayjs": "^1.11.5",
     "dotenv": "^16.0.2",
