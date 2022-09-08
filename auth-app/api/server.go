@@ -83,6 +83,7 @@ func (server *ApiServer) setupRouter() {
 	router.GET(PING_ROUTE, server.ping)
 	router.POST(REGISTER_ROUTE, server.register)
 	router.POST(LOGIN_ROUTE, server.login)
+	router.Use(authMiddleware(server.TokenManager)).GET(VERIFY_TOKEN_ROUTE, server.verifyToken)
 
 	server.Router = router
 }
