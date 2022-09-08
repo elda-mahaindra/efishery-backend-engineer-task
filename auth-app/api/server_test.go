@@ -3,6 +3,7 @@ package api_test
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -145,7 +146,56 @@ func TestRegister(t *testing.T) {
 	}
 }
 
+func TestVerifyAccessToken(t *testing.T) {
+	t.Parallel()
+
+	registeredUser := register(t, sample.NewUser("admin")).User
+
+	tokenString := login(t, registeredUser.Password, registeredUser.Phone).TokenString
+
+	// TDD Test
+	testCases := []struct {
+		checkResponse func(recoder *httptest.ResponseRecorder)
+		name          string
+	}{
+		{
+			checkResponse: func(recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusOK, recorder.Code)
+			},
+			name: "success",
+		},
+	}
+
+	for i := range testCases {
+		tc := testCases[i]
+
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			apiServer := createApiServer(t)
+			recorder := httptest.NewRecorder()
+
+			url := api.VERIFY_TOKEN_ROUTE
+			request, err := http.NewRequest(http.MethodGet, url, nil)
+			require.NoError(t, err)
+
+			addAuthorization(request, tokenString)
+
+			apiServer.Router.ServeHTTP(recorder, request)
+			tc.checkResponse(recorder)
+		})
+	}
+}
+
 // ================================ utilities ================================
+func addAuthorization(
+	request *http.Request,
+	tokenString string,
+) {
+	authorizationHeader := fmt.Sprintf("%s %s", api.AuthorizationTypeBearer, tokenString)
+	request.Header.Set(api.AuthorizationHeaderKey, authorizationHeader)
+}
+
 func createApiServer(t *testing.T) *api.ApiServer {
 	// load environment variables from .env file
 	config, err := util.LoadConfig("../.")
@@ -164,6 +214,41 @@ func createApiServer(t *testing.T) *api.ApiServer {
 	apiServer := api.NewApiServer(config, userStore, tokenManager)
 
 	return apiServer
+}
+
+func login(t *testing.T, password, phone string) api.LoginResponse {
+	apiServer := createApiServer(t)
+	recorder := httptest.NewRecorder()
+
+	reqBody := gin.H{
+		"password": password,
+		"phone":    phone,
+	}
+
+	// Marshal body data to JSON
+	data, err := json.Marshal(reqBody)
+	require.NoError(t, err)
+
+	url := "/login"
+	request, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(data))
+	require.NoError(t, err)
+
+	apiServer.Router.ServeHTTP(recorder, request)
+	require.Equal(t, http.StatusOK, recorder.Code)
+
+	res := func(t *testing.T, body *bytes.Buffer) api.LoginResponse {
+		data, err := ioutil.ReadAll(body)
+		require.NoError(t, err)
+
+		var res api.LoginResponse
+		err = json.Unmarshal(data, &res)
+
+		require.NoError(t, err)
+
+		return res
+	}(t, recorder.Body)
+
+	return res
 }
 
 func register(t *testing.T, user *model.User) api.RegisterResponse {
