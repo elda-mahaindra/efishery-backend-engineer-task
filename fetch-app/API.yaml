@@ -1,0 +1,172 @@
+openapi: 3.0.3
+info:
+  title: fetch-app
+  description: eFishery Back End Engineer Test
+  contact:
+    name: Elda Mahaindra
+    email: faith030@gmail.com
+  version: "1.0"
+servers:
+  - url: localhost:4000
+paths:
+  /ping:
+    get:
+      summary: Ping server
+      description: return 'PONG' response
+      responses:
+        "200":
+          description: Success ping the server
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: PONG
+  /resources:
+    get:
+      security:
+        - token_string: []
+      summary: Read all resources
+      responses:
+        "200":
+          description: Success read all resources
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/resource"
+  /resources/aggregates/price:
+    get:
+      security:
+        - token_string: []
+      summary: "Read all price-aggregated resources "
+      responses:
+        "200":
+          description: Success read all price-aggregated resources
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  aggregation_results:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/aggregation_result"
+        "403":
+          description: Failed as role is unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+              example:
+                description: you don't have authorization to access this endpoint.
+                error: ""
+  /resources/aggregates/size:
+    get:
+      security:
+        - token_string: []
+      summary: "Read all size-aggregated resources "
+      responses:
+        "200":
+          description: Success read all size-aggregated resources
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  aggregation_results:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/aggregation_result"
+        "403":
+          description: Failed as role is unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+              example:
+                description: you don't have authorization to access this endpoint.
+                error: ""
+components:
+  securitySchemes:
+    token_string:
+      description: authentication using 'token_string' for HTR RESTful Api
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    aggregate:
+      type: object
+      properties:
+        week:
+          type: integer
+        min:
+          type: integer
+        max:
+          type: integer
+        avg:
+          type: integer
+        median:
+          type: integer
+        resources:
+          type: array
+          items:
+            $ref: "#/components/schemas/resource"
+    aggregation_result:
+      type: object
+      properties:
+        area_provinsi:
+          type: string
+        aggregates:
+          type: array
+          items:
+            $ref: "#/components/schemas/aggregate"
+    error_response:
+      type: object
+      properties:
+        message:
+          type: string
+        error:
+          type: string
+    resource:
+      type: object
+      properties:
+        uuid:
+          type: string
+        komoditas:
+          type: string
+        area_provinsi:
+          type: string
+        area_kota:
+          type: string
+        size:
+          type: string
+        price:
+          type: string
+        tgl_parsed:
+          type: string
+        timestamp:
+          type: string
+        price_in_usd:
+          type: integer
+    user:
+      type: object
+      properties:
+        created_at:
+          type: string
+        name:
+          type: string
+        password:
+          type: string
+        phone:
+          type: string
+        role:
+          type: string
+          enum:
+            - super
+            - admin
+            - user
