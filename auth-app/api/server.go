@@ -82,6 +82,7 @@ func (server *ApiServer) setupRouter() {
 
 	router.GET(PING_ROUTE, server.ping)
 	router.POST(REGISTER_ROUTE, server.register)
+	router.POST(LOGIN_ROUTE, server.login)
 
 	server.Router = router
 }
