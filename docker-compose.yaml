@@ -1,0 +1,28 @@
+version: "3.9"
+services:
+  auth-app:
+    build:
+      context: ./auth-app
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - SECRET=EFISHERYBACKENDENGINEERTASK 2022
+    volumes:
+      - D:\Codes\Web\Others\efishery-backend-engineer-task\efishery-backend-engineer-task\data:/app/data
+
+  fetch-app:
+    build:
+      context: ./fetch-app
+      dockerfile: Dockerfile
+    ports:
+      - "4000:4000"
+    environment:
+      - PORT=4000
+      - SECRET=EFISHERYBACKENDENGINEERTASK 2022
+    depends_on:
+      - auth-app
+
+volumes:
+  postgres-data:
