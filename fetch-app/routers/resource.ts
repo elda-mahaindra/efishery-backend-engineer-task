@@ -5,6 +5,7 @@ import { RouterExtender } from "../app";
 import * as ROUTES from "../constants/routes";
 import handleReadAll from "../handlers/resources/read_all";
 import handleReadPriceAggregation from "../handlers/resources/read_price_aggregation";
+import handleReadSizeAggregation from "../handlers/resources/read_size_aggregation";
 import verifyAuth from "../middlewares/auth";
 
 // ---------------------------------------------- the routes
@@ -16,6 +17,11 @@ class ResourceRouterExtender implements RouterExtender {
       .route(`${ROUTES.RESOURCES}/aggregates/price`)
       .all(verifyAuth)
       .get(handleReadPriceAggregation);
+
+    router
+      .route(`${ROUTES.RESOURCES}/aggregates/size`)
+      .all(verifyAuth)
+      .get(handleReadSizeAggregation);
   }
 }
 
