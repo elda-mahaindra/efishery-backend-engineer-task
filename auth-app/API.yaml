@@ -1,0 +1,166 @@
+openapi: 3.0.3
+info:
+  title: auth-app
+  description: eFishery Back End Engineer Test
+  contact:
+    name: Elda Mahaindra
+    email: faith030@gmail.com
+  version: "1.0"
+servers:
+  - url: localhost:8080
+paths:
+  /login:
+    post:
+      summary: Login user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                phone:
+                  type: string
+              required:
+                - password
+                - phone
+      responses:
+        "200":
+          description: Success login
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token_string:
+                    type: string
+        "400":
+          description: Failed as invalid data was submitted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+        "401":
+          description: Failed as wrong password was submitted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+              example:
+                description: Incorrect phone number or password.
+                error: incorrect phone number or password
+  /ping:
+    get:
+      summary: Ping server
+      description: return 'PONG' response
+      responses:
+        "200":
+          description: Success ping the server
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: PONG
+  /register:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                phone:
+                  type: string
+                role:
+                  type: string
+                  enum:
+                    - super
+                    - admin
+                    - user
+              required:
+                - name
+                - phone
+                - role
+      responses:
+        "200":
+          description: Success register a new user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: "#/components/schemas/user"
+        "400":
+          description: Failed as invalid data was submitted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+  /verify-token:
+    post:
+      security:
+        - token_string: []
+      summary: Verify token
+      responses:
+        "200":
+          description: Success verify token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  created_at:
+                    type: string
+                  name:
+                    type: string
+                  phone:
+                    type: string
+                  role:
+                    type: string
+                    enum:
+                      - super
+                      - admin
+                      - user
+components:
+  securitySchemes:
+    token_string:
+      description: authentication using 'token_string' for HTR RESTful Api
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    error_response:
+      type: object
+      properties:
+        description:
+          type: string
+        error:
+          type: string
+    user:
+      type: object
+      properties:
+        created_at:
+          type: string
+        name:
+          type: string
+        password:
+          type: string
+        phone:
+          type: string
+        role:
+          type: string
+          enum:
+            - super
+            - admin
+            - user
