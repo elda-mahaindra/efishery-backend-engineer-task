@@ -80,6 +80,8 @@ func (server *ApiServer) setupRouter() {
 
 	router.Use(cors.New(config))
 
+	router.GET(PING_ROUTE, server.ping)
+
 	server.Router = router
 }
 
