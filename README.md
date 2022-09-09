@@ -2,6 +2,17 @@
 
 A group of two services: auth-app and fetch-app.
 
+## Models
+
+### 1. Context
+
+![context](https://user-images.githubusercontent.com/51381311/189251729-214aec35-f3c5-4fd8-9331-eae23d74e476.jpg)
+
+### 2. Container
+
+![container](https://user-images.githubusercontent.com/51381311/189251766-bd02bfd0-1b3f-42fd-915c-3413a05b007b.jpg)
+
+
 ## Environment Variables
 
 To run this project, the following environment variables needed to be added.
